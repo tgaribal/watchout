@@ -3,10 +3,13 @@
 /* Note: an asteroid image is included in this repo.
 Feel free to use it if you like. */
 
+body {
+  background-color: rgb(149, 216, 191);
+}
+
 .board {
   width: 80%;
   height: 80vh;
-  border: solid 2px red;
   margin-left: auto;
   margin-right: auto;
 }
@@ -14,8 +17,19 @@ Feel free to use it if you like. */
 svg {
   width: 100%;
   height: 100%;
+  background: url('http://www.planwallpaper.com/static/images/6909249-black-hd-background.jpg');
 }
 
 circle {
-  fill: url(#asteroid);
+  fill: #e05151;
 }
+
+.user {
+  fill: blue;
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+}
+
+
+
