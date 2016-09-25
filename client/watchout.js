@@ -5,7 +5,7 @@ var gameBoard = d3.select('svg');
 // asteroids = [ {radius:20, cx: 50, cy: 100}, {radius:20, cx: 20, cy: 80} ....]
 
 
-var asteroids = d3.range(5).map(function() {
+var asteroids = d3.range(20).map(function() {
   return {
     radius: 20,
     cx: Math.random() * parent.innerWidth * 0.7 + 50,
@@ -27,10 +27,10 @@ gameBoard.selectAll('circle').data(asteroids)
 
 
 var setPositions = function() {
-  gameBoard.selectAll('circle').data(asteroids)
+  gameBoard.selectAll('circle')
   .transition().duration(2000)
-  .attr('cx', function(d) { return Math.random() * parent.innerWidth * 0.8; })
-  .attr('cy', function(d) { return Math.random() * parent.innerHeight * 0.8; });
+  .attr('cx', function(d) { d.cx = Math.random() * parent.innerWidth * 0.8; return d.cx; })
+  .attr('cy', function(d) { d.cy = Math.random() * parent.innerWidth * 0.8; return d.cy; });
 };
 
 setInterval(function () { 
@@ -38,7 +38,7 @@ setInterval(function () {
 }, 2000);
 
 
-// create a new circle
+// create the "player", center it on the board, and make it able to be dragged
 
 var centerXString = d3.select('svg').style('width');
 var centerXNum = Number((centerXString.substring(0, centerXString.length - 2 ) / 2 ));
@@ -56,8 +56,8 @@ var onDragDrop = function (dragMove) {
 
 var dragmove = function (d) {
   d3.select(this)
-  .attr('x', d3.event.x - 15)
-  .attr('y', d3.event.y - 15);
+  .attr('x', d3.event.x - 5)
+  .attr('y', d3.event.y - 5);
 };
 
 
@@ -68,25 +68,24 @@ gameBoard.append('rect')
 .style('fill', 'blue')
 .call(onDragDrop(dragmove));
 
-var collision = false;
+
+
+
+
+
+var score = 0;
 var highScore = highScore || 0;
 var collisionNum = 0;
 
-
-d3.timer(function(elapsed) {
-  var score = Math.floor(elapsed / 100);
+var incrementScore = function() {
+  score++;
   d3.select('.currentScore').text(score);
-  if (checkCollisions()) {
-    collisionNum++;
-    d3.timer.stop();
-    d3.select('.collisionScore').text(collisionNum);
-    if (score > highScore) {
-      highScore = score;
-      d3.select('.highScore').text(highScore);
-    }
+  if (score > highScore) {
+    highScore = score;
+    d3.select('.highScore').text(highScore);
   }
-}, 10);
-//console.log(t);
+};
+
 
 //initiate checkCollisions function
 var checkCollisions = function() {
@@ -95,21 +94,17 @@ var checkCollisions = function() {
   .each(function (element) {
     var xDiff = Math.abs(element.cx - d3.select('rect').attr('x'));
     var yDiff = Math.abs(element.cy - d3.select('rect').attr('y'));
-    //console.log(element);
-    if (yDiff < 15) {
-      console.log(xDiff)
-      console.log('collision!');
-      return true;
+    if (yDiff < 10 && xDiff < 10) {
+      console.log('collision', yDiff, xDiff);
+      collisionNum++;
+      score = 0;
+      d3.select('.collisionScore').text(collisionNum);
     }
   });
-  return false;
-  //check if cx of circle = cx of mouse AND cy of circle = cy of mouse (approximately)
-    //collision = true
-    //otherwise collision is false
 };
 
-//call check collisions every few milliseconds
-
+setInterval(incrementScore, 50);
+setInterval(checkCollisions, 10);
 
 
 
